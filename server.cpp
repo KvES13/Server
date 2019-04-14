@@ -4,44 +4,52 @@
 #define port 5000
 #define address QHostAddress::LocalHost
 
-server::server(QObject *parent) : QObject(parent)
+Server::Server(QObject *parent) : QObject(parent)
 {
     udpsocket = new QUdpSocket(this);
     udpsocket->bind(address,port);
 
-    connect(udpsocket,SIGNAL(readyRead()),this,SLOT(ReadMessage()));
+    connect(udpsocket,SIGNAL(readyRead()),this,SLOT(ReadDatagrams()));
 
 }
 
 
-void server::ReadMessage()
+void Server::ReadDatagrams()
 {
     int count= 0;
     while(udpsocket->hasPendingDatagrams())
     {
         QByteArray datagram;
         quint32 current_number;
-        QString msg;
+        QString msg ;
         QHostAddress sender;
         quint16 senderPort;
-
+        quint8 current_protocol;
 
         datagram.resize(udpsocket->pendingDatagramSize());
 
 
-       QDataStream in(datagram);
+       QDataStream in(&datagram, QIODevice::ReadOnly);
 
-       udpsocket->readDatagram(datagram.data(),datagram.size(),
-               &sender,&senderPort);
+       udpsocket->readDatagram(datagram.data(),
+                               datagram.size(),
+                               &sender,
+                               &senderPort);
 
 
-        in>>current_number>>msg;
+        in>>current_number>> current_protocol>>msg;
 
-        emit id(QString::number(current_number));
-        emit message(msg);
+        qDebug()<<current_number<<current_protocol<<msg;
 
-        udpsocket->writeDatagram(datagram,sender,senderPort);
 
+         QByteArray arr;
+         QDataStream out(&arr, QIODevice::WriteOnly);
+         out<<current_number<<current_protocol<<msg;
+
+        udpsocket->writeDatagram(arr,sender,senderPort);
+        out<<sender<<senderPort;
+
+        emit array(arr);
          count++;
 
 
@@ -54,7 +62,7 @@ void server::ReadMessage()
 
 
 
-void server::SendMessage()
+void Server::SendMessage()
 {
 
 }
@@ -64,12 +72,12 @@ void server::SendMessage()
 //    return
 //}
 
-QString server::GetServerAdrress()
+QString Server::GetServerAdrress()
 {
     return QHostAddress(address).toString();
 }
 
-QString server::GetServerPort()
+QString Server::GetServerPort()
 {
     return QString::number(port);
 }

@@ -19,10 +19,8 @@ public:
     QString data;
 
 public slots:
-    void showMessage(QString msg);
-    void showID(QString id);
     void showText();
-
+    void showArray(QByteArray arr);
 private slots:
 
 
@@ -30,7 +28,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    server *serv;
+    Server *server;
 };
 
 #endif // MAINWINDOW_H

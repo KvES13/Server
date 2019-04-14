@@ -5,30 +5,30 @@
 #include <QHostAddress>
 #include <QUdpSocket>
 #include <QPlainTextEdit>
-class server : public QObject
+class Server : public QObject
 {
     Q_OBJECT
 public:
-    explicit server(QObject *parent = nullptr);
+    explicit Server(QObject *parent = nullptr);
 
 
 
-    int count_send;
-    int count_rec;
+
 
 public slots:
-    void ReadMessage();
+    void ReadDatagrams();
     void SendMessage();
 
     QString GetServerAdrress();
     QString GetServerPort();
 signals:
-    void id(QString curr);
-    void message(QString mess);
+    void array(QByteArray arr);
 
 private:
+    int count_send;
+    int count_rec;
+    QUdpSocket *udpsocket = nullptr;
 
-    QUdpSocket *udpsocket;
 //    QHostAddress dir;
 //    quint16 puertoPar;
 

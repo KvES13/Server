@@ -9,20 +9,15 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    serv = new server();
+    server = new Server();
 
 
-    ui->lineAddress->setText((serv->GetServerAdrress()));
-    ui->linePort->setText((serv->GetServerPort()));
+    ui->lineAddress->setText((server->GetServerAdrress()));
+    ui->linePort->setText((server->GetServerPort()));
 
     //serv->ReadMessage();
 
-    connect(serv,SIGNAL(id(QString)),this,SLOT(showID(QString)));
-    connect(serv,SIGNAL(message(QString)),this,SLOT(showMessage(QString)));
-
-//    ui->plainTextEdit->appendPlainText(serv->info);
-//    ui->plainTextEdit->appendPlainText(serv->data);
-    showText();
+    connect(server,SIGNAL(array(QByteArray)),this,SLOT(showArray(QByteArray)));
 
 }
 
@@ -32,17 +27,21 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::showMessage(QString msg)
+void MainWindow::showArray(QByteArray arr)
 {
-   ui->plainTextEdit->appendPlainText(msg);
+  QDataStream in(&arr, QIODevice::ReadOnly);
+  quint32 number;
+  quint8 protocol;
+  QString msg;
+  QHostAddress sender;
+  quint16 senderPort;
+
+  in>>number>>protocol>>msg>>sender>>senderPort;
+  ui->plainTextEdit->appendPlainText("IP: "+ sender.toString()+"  Port:" + QString::number(senderPort)
+                                     +"  Номер: " + QString::number(number)
+                                     + "  Протокол: "+ QString::number(protocol)
+                                     + "  Сообщение: " + msg);
 }
-
-void MainWindow::showID(QString id)
-{
-  ui->plainTextEdit->appendPlainText(id);
-}
-
-
 
 
 void MainWindow::showText()
