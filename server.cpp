@@ -28,7 +28,6 @@ void Server::ReadDatagrams()
 
         datagram.resize(udpsocket->pendingDatagramSize());
 
-
        QDataStream in(&datagram, QIODevice::ReadOnly);
 
        udpsocket->readDatagram(datagram.data(),
@@ -51,11 +50,8 @@ void Server::ReadDatagrams()
 
         emit array(arr);
          count++;
-
-
-
     }
- //pt->plainTextEdit->appendPlainText("Received: " + QString("%1").arg(count));
+
 }
 
 
@@ -67,10 +63,6 @@ void Server::SendMessage()
 
 }
 
-//QString server::TTT()
-//{
-//    return
-//}
 
 QString Server::GetServerAdrress()
 {
