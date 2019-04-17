@@ -16,12 +16,16 @@ public:
 
 
 public slots:
+    //Чтение датаграмм
     void ReadDatagrams();
     void SendMessage();
 
+    //Адрес сервера
     QString GetServerAdrress();
+    //Номер порта
     QString GetServerPort();
 signals:
+    //Сигнал, возвращающий входящее сообщение
     void array(QByteArray arr);
 
 private:
