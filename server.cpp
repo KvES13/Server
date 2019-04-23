@@ -8,7 +8,7 @@ Server::Server(QObject *parent) : QObject(parent)
 {
     udpsocket = new QUdpSocket(this);
     udpsocket->bind(address,port);
-
+    List = new QList<Message*>();
     connect(udpsocket,SIGNAL(readyRead()),this,SLOT(ReadDatagrams()));
 
 }
@@ -22,7 +22,7 @@ void Server::ReadDatagrams()
         //Массив, содержащий сообщение
         QByteArray datagram;
         //Номер текущего сообщения
-        quint32 current_number;
+        quint32 number;
         //Текст сообщения
         QString msg ;
         //Адрес отправителя
@@ -30,8 +30,8 @@ void Server::ReadDatagrams()
         //Порт отправителя
         quint16 senderPort;
         //Номер протокола сообщения (0 - udp, 1 - tcp)
-        quint8 current_protocol;
-
+        bool protocol;
+        QString sum;
         //
         datagram.resize(udpsocket->pendingDatagramSize());
 
@@ -45,14 +45,23 @@ void Server::ReadDatagrams()
                                &senderPort);
 
         //
-        in>>current_number>> current_protocol>>msg;
+        in>>number>> protocol>>msg>>sum;
+        List->append(new Message(number,protocol,msg,sum));
 
-        qDebug()<<current_number<<current_protocol<<msg;
+        qDebug()<<number<<protocol<<msg<<sum;
 
+        if((isCheckedSum) && (!CheckSum(msg,sum)) )
+        {
+            mistakesSum++;
+        }
+        if((isCheckedNumber ))
+        {
+
+        }
 
          QByteArray arr;
          QDataStream out(&arr, QIODevice::WriteOnly);
-         out<<current_number<<current_protocol<<msg;
+         out<<number<<protocol<<msg;
 
         //Отправка ответа
         udpsocket->writeDatagram(arr,sender,senderPort);
@@ -64,9 +73,45 @@ void Server::ReadDatagrams()
 
 }
 
+bool Server::CheckNumber(int index)
+{
 
+    if ((List->at(index)->number) < (List->at(index-1)->number))
+    {
+        qDebug()<<List->at(index)->number<<List->at(index-1)->number;
+        return true;
+    }
+    else
+    {
+        return  false;
+    }
 
+}
 
+bool Server::CheckSum(QString data, QString sum)
+{
+
+    QByteArray checksum = data.toUtf8();
+    QString MD5sum = QCryptographicHash::hash(checksum, QCryptographicHash::Md5).toHex();
+
+    if (MD5sum == sum)
+    {
+        return  true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void Server::SetIsCheckedSum(bool Box)
+{
+    isCheckedSum = Box;
+}
+void Server::SetIsCheckedNumber(bool Box)
+{
+    isCheckedNumber = Box;
+}
 
 void Server::SendMessage()
 {
@@ -83,3 +128,4 @@ QString Server::GetServerPort()
 {
     return QString::number(port);
 }
+

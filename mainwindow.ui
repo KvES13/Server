@@ -121,7 +121,7 @@
      <string>Контрольная сумма</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="checkBox_number">
     <property name="geometry">
      <rect>
       <x>30</x>

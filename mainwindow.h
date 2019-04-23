@@ -22,8 +22,8 @@ public slots:
     void showText();
     void showArray(QByteArray arr);
 private slots:
-
-
+    void BoxSum();
+    void BoxNumber();
     void on_clearButton_clicked();
 
 private:

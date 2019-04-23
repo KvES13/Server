@@ -17,15 +17,27 @@ MainWindow::MainWindow(QWidget *parent) :
     //Вывод текущего номера порта
     ui->linePort->setText((server->GetServerPort()));
 
-
+    server->
     //?
     connect(server,SIGNAL(array(QByteArray)),this,SLOT(showArray(QByteArray)));
+    connect(ui->checkBox_sum,SIGNAL(clicked()),this, SLOT(BoxSum()));
+    connect(ui->checkBox_number,SIGNAL(clicked()),this, SLOT(BoxNumber()));
 
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::BoxSum()
+{
+    server->SetIsCheckedSum(ui->checkBox_sum->isChecked());
+}
+
+void MainWindow::BoxNumber()
+{
+    server->SetIsCheckedNumber(ui->checkBox_number->isChecked());
 }
 
 //Вывод сообщения на экран
@@ -35,7 +47,7 @@ void MainWindow::showArray(QByteArray arr)
   //Номер сообщения
   quint32 number;
   //Номер протокола (0 - udp, 1 - tcp)
-  quint8 protocol;
+  bool protocol;
   //Текст сообщения
   QString msg;
   //Адрес отправителя
@@ -62,7 +74,7 @@ void MainWindow::showText()
 
 
 
-//Обработка нажанитя кнопки "Удалить"
+//Обработка нажатия кнопки "Удалить"
 void MainWindow::on_clearButton_clicked()
 {
  ui->plainTextEdit->clear();
